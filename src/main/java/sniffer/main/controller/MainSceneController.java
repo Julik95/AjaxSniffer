@@ -123,6 +123,13 @@ public class MainSceneController implements Initializable{
 		
 	}
 	
+	public void applyStyletoPortNumLabel(LogStyle logStyle) {
+		Platform.runLater(() -> {
+			portNumLabel.getStyleClass().clear();
+			portNumLabel.getStyleClass().add(logStyle.getStyle());
+		});
+	}
+	
 	public void handleChooseFile(ActionEvent event) {
 		FileChooser fileChooser = showFileChooser();
 		File file = fileChooser.showOpenDialog(mainStage);
@@ -130,6 +137,7 @@ public class MainSceneController implements Initializable{
 			Integer portNum = Utils.getInstance().getPortFromPropsFile(file);
 			if(portNum != null) {
 				portNumLabel.setText(portNum.toString());
+				portNumLabel.getStyleClass().add("success");
 				choosePropsWrapper.setVisible(false);
 				choosedPropsWrapper.setVisible(true);
 				 Task<Void> task = new Task<Void>() {

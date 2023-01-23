@@ -132,6 +132,10 @@ public class Utils {
 		recursionDirCleaning(dir.listFiles());
 	}
 	
+	public void changePortLabelColorByLogStyle(LogStyle logStyle) {
+		controller.applyStyletoPortNumLabel(logStyle);
+	}
+	
 	private void recursionDirCleaning(File[] files) {
 		for (File file : files) {
             if (file.isDirectory()) {

@@ -5,7 +5,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.nio.charset.StandardCharsets;
+import java.util.NoSuchElementException;
 import java.util.Scanner;
 
 import sniffer.main.utils.LogStyle;
@@ -30,6 +30,7 @@ public class SocketSniffer {
 		    		 }
 		    	 } catch (IOException ioe) {
 		    		 Utils.getInstance().doWhenExceptionOccurs(ioe, String.format("Something gone wrang: ", ioe.getMessage()));
+		    		 Utils.getInstance().changePortLabelColorByLogStyle(LogStyle.ERROR);
 		    		 stopped = true;
 		    	 }
 		      });
@@ -37,10 +38,12 @@ public class SocketSniffer {
 		      while (!stopped) {
 		        Thread.sleep(10);
 		      }
-		      Utils.getInstance().appendInfo("Client exited", LogStyle.WARN);
+		      Utils.getInstance().appendInfo("Socket port has been closed", LogStyle.WARN);
+		      Utils.getInstance().changePortLabelColorByLogStyle(LogStyle.ERROR);
 
 		 } catch (IOException e) {
 			 Utils.getInstance().doWhenExceptionOccurs(e, String.format("Error during openning of Socket %s", e.getMessage()));
+			 
 		} catch (InterruptedException e) {
 			Utils.getInstance().doWhenExceptionOccurs(e, String.format("Excecution was interrupted %s", e.getMessage()));
 		}
@@ -53,8 +56,12 @@ public class SocketSniffer {
 				 final String fromClient = clientScan.nextLine();
 				 Utils.getInstance().tryToGetImagesFromPacket(fromClient);
 			 }
+		 }catch(NoSuchElementException ex) {
+			 Utils.getInstance().appendInfo("Client exited but socket port still listenning to new connections...", LogStyle.WARN);
+			 Utils.getInstance().changePortLabelColorByLogStyle(LogStyle.WARN);
 		 }catch(Exception ex) {
 			 Utils.getInstance().doWhenExceptionOccurs(ex, String.format("Error occured durind reading packet from client: ", ex.getMessage()));
+			 Utils.getInstance().changePortLabelColorByLogStyle(LogStyle.ERROR);
 			 stopped = true;
 		 }
 	    
