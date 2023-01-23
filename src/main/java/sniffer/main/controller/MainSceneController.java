@@ -137,7 +137,8 @@ public class MainSceneController implements Initializable{
 			Integer portNum = Utils.getInstance().getPortFromPropsFile(file);
 			if(portNum != null) {
 				portNumLabel.setText(portNum.toString());
-				portNumLabel.getStyleClass().add("success");
+				portNumLabel.getStyleClass().clear();
+				portNumLabel.getStyleClass().add("warn");
 				choosePropsWrapper.setVisible(false);
 				choosedPropsWrapper.setVisible(true);
 				 Task<Void> task = new Task<Void>() {
