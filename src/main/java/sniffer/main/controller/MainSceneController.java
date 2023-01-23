@@ -144,7 +144,7 @@ public class MainSceneController implements Initializable{
 				 Task<Void> task = new Task<Void>() {
 					@Override
 					protected Void call() throws Exception {
-						socketSniffer.acceptClients(portNum);
+						socketSniffer.acceptClients(portNum, false);
 						return null;
 					}
 					 
