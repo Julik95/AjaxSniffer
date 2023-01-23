@@ -4,7 +4,7 @@
   <groupId>com.ajax</groupId>
   <artifactId>sniffer</artifactId>
   <name>Pocket sniffer</name>
-  <version>1.0.0</version>
+  <version>1.0.2</version>
   <build>
     <plugins>
       <plugin>

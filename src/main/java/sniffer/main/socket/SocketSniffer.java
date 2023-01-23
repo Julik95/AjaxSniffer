@@ -37,7 +37,7 @@ public class SocketSniffer {
 		      while (!stopped) {
 		        Thread.sleep(10);
 		      }
-		      Utils.getInstance().appendInfo("Program exit", LogStyle.INFO);
+		      Utils.getInstance().appendInfo("Client exited", LogStyle.WARN);
 
 		 } catch (IOException e) {
 			 Utils.getInstance().doWhenExceptionOccurs(e, String.format("Error during openning of Socket %s", e.getMessage()));

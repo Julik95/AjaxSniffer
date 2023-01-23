@@ -10,6 +10,7 @@ import java.util.ResourceBundle;
 
 import org.quartz.SchedulerException;
 
+import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -82,39 +83,44 @@ public class MainSceneController implements Initializable{
 	
 	public void handleError(Exception ex, String message) {
 		
-		Alert alert = new Alert(AlertType.ERROR);
-		alert.setTitle("Error occured");
-		alert.setHeaderText(message);
-		Label label = new Label("The exception stacktrace:");
-		
-		StringWriter sw = new StringWriter();
-		PrintWriter pw = new PrintWriter(sw);
-		ex.printStackTrace(pw);
-		String exceptionText = sw.toString();
-		
-		TextArea textArea = new TextArea(exceptionText);
-		textArea.setEditable(false);
-		textArea.setWrapText(true);
+		Platform.runLater(() -> {
+			Alert alert = new Alert(AlertType.ERROR);
+			alert.setTitle("Error occured");
+			alert.setHeaderText(message);
+			Label label = new Label("The exception stacktrace:");
+			
+			StringWriter sw = new StringWriter();
+			PrintWriter pw = new PrintWriter(sw);
+			ex.printStackTrace(pw);
+			String exceptionText = sw.toString();
+			
+			TextArea textArea = new TextArea(exceptionText);
+			textArea.setEditable(false);
+			textArea.setWrapText(true);
 
-		textArea.setMaxWidth(Double.MAX_VALUE);
-		textArea.setMaxHeight(Double.MAX_VALUE);
-		GridPane.setVgrow(textArea, Priority.ALWAYS);
-		GridPane.setHgrow(textArea, Priority.ALWAYS);
+			textArea.setMaxWidth(Double.MAX_VALUE);
+			textArea.setMaxHeight(Double.MAX_VALUE);
+			GridPane.setVgrow(textArea, Priority.ALWAYS);
+			GridPane.setHgrow(textArea, Priority.ALWAYS);
 
-		GridPane expContent = new GridPane();
-		expContent.setMaxWidth(Double.MAX_VALUE);
-		expContent.add(label, 0, 0);
-		expContent.add(textArea, 0, 1);
+			GridPane expContent = new GridPane();
+			expContent.setMaxWidth(Double.MAX_VALUE);
+			expContent.add(label, 0, 0);
+			expContent.add(textArea, 0, 1);
 
-		alert.getDialogPane().setExpandableContent(expContent);
+			alert.getDialogPane().setExpandableContent(expContent);
 
-		alert.showAndWait();
+			alert.showAndWait();
+		});
 	}
 	
 	public void appendInfo(String message, LogStyle logStyle) {
-		Label text = new Label(message);
-		text.getStyleClass().add(logStyle.getStyle());
-		logContainer.getChildren().add(text);
+		Platform.runLater(() ->{
+			Label text = new Label(message);
+			text.getStyleClass().add(logStyle.getStyle());
+			logContainer.getChildren().add(text);
+		});
+		
 	}
 	
 	public void handleChooseFile(ActionEvent event) {
