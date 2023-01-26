@@ -9,6 +9,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -127,6 +128,7 @@ public class Utils {
 		controller.appendInfo(message, logStyle);
 	}
 	
+	
 	public void emptyImegesDir() {
 		File dir = new File(Constants.IMEGES_DIR);
 		recursionDirCleaning(dir.listFiles());
@@ -142,17 +144,24 @@ public class Utils {
             	appendInfo(String.format("Directory: %s is going to be analyzed to remove old imeges.", Constants.IMEGES_DIR + file.getName()), LogStyle.INFO);
                 recursionDirCleaning(file.listFiles());
             } else {
-            	Pattern imageDatePattern = Pattern.compile(Constants.IMAGE_DTAE_REGEXP, Pattern.CASE_INSENSITIVE);
-    			Matcher imageDateMatcher = imageDatePattern.matcher(file.getName());
-    			if(imageDateMatcher.find()) {
-    				Date imageDate = parseDate(imageDateMatcher.group(1));
-    				if(imageDate != null && checkIfDateIsOld(imageDate)) {
-    					if(file.delete())
-    						appendInfo(String.format("File: %s has been removed", file.getName()), LogStyle.WARN);
-    				}
-    			}
+            	Date creationDate = getFileCreationDate(file);
+            	if(creationDate != null && checkIfDateIsOld(creationDate)) {
+            		if(file.delete())
+						appendInfo(String.format("File: %s has been removed", file.getName()), LogStyle.WARN);
+            	}
             }
         }
+	}
+	
+	public Date getFileCreationDate(File file) {
+		BasicFileAttributes attr;
+		try {
+		    attr = Files.readAttributes(Paths.get( file.getAbsolutePath()), BasicFileAttributes.class);
+		    return new Date(attr.creationTime().toMillis());
+	    } catch (IOException e) {
+	    	doWhenExceptionOccurs(e, String.format("Ununable to get file creation date %s", e.getMessage()));
+	    }
+		return null;
 	}
 	
 	private String downloadImageToLocal(URL url, String metas) throws IOException {
@@ -165,9 +174,7 @@ public class Utils {
 				String path = Constants.IMEGES_DIR+customerId;
 				Files.createDirectories(Paths.get(path));
 				String imgName = imageNameMatcher.group(1);
-				String imgExtention = FilenameUtils.getExtension(imgName);
-				imgName = FilenameUtils.getBaseName(imgName);
-				path = path + File.separatorChar+imgName+"_t_"+getFormattedDate()+"."+imgExtention;  
+				path = path + File.separatorChar+imgName;
 				try(InputStream in = url.openStream()){
 				    Files.copy(in, Paths.get(path));
 				}catch(Exception ex) {
@@ -188,19 +195,6 @@ public class Utils {
 		return new Date().after(c.getTime());
 	}
 	
-	private String getFormattedDate() {
-		SimpleDateFormat simpleDateFormat = new SimpleDateFormat(Constants.DATE_FORMAT);
-		return simpleDateFormat.format(new Date());
-	}
-	
-	private Date parseDate(String date) {
-		try {
-			return  new SimpleDateFormat(Constants.DATE_FORMAT).parse(date);
-		} catch (ParseException ex) {
-			doWhenExceptionOccurs(ex, String.format("Ununable to parse date for value %s",date));
-			return null;
-		}  
-	}
 	
 	private Integer parseToInt(String value) {
 		Integer result = null;

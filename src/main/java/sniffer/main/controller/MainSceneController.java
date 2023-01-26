@@ -1,6 +1,8 @@
 package sniffer.main.controller;
 
+import java.awt.Desktop;
 import java.io.File;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.net.URL;
@@ -126,6 +128,31 @@ public class MainSceneController implements Initializable{
 			logContainer.getChildren().add(text);
 		});
 		
+	}
+	
+	public void appendImageDownloadedInfo(String message, final String imgPath) {
+		Platform.runLater(() ->{
+			Label text = new Label(message);
+			text.getStyleClass().add(LogStyle.SUCCESS.getStyle());
+			text.setOnMousePressed(event -> {
+				File f = new File(imgPath);
+				openFile(f);
+			});
+			logContainer.getChildren().add(text);
+		});
+		
+	}
+	
+	private void openFile(File file) {
+		if(file != null) {
+			Desktop dt = Desktop.getDesktop();
+		    try {
+				dt.open(file);
+			} catch (IOException e) {
+				Utils.getInstance().doWhenExceptionOccurs(e, String.format("Unenable to open image with path %s", file.getAbsolutePath()));
+				e.printStackTrace();
+			}
+		}
 	}
 	
 	public void applyStyletoPortNumLabel(LogStyle logStyle) {
