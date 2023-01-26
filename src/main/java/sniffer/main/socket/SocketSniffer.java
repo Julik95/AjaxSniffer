@@ -17,16 +17,13 @@ public class SocketSniffer {
 	 private volatile boolean stoppedReading = false;
 	 private volatile boolean stoppedListening = false;
 	 
-	 private ServerSocket server;
-	 private Socket client;
-	 
 	 public void acceptClients(Integer port, boolean alreadyListening) {
 		 try{
-			 this.server = new ServerSocket(port);
+			 ServerSocket server = new ServerSocket(port);
 			 if(!alreadyListening) {
 				 Utils.getInstance().appendInfo(String.format("Server ready to accept connections on port %d", server.getLocalPort()), LogStyle.INFO);
 			 }
-		     client = server.accept();
+		     final Socket client = server.accept();
 		     Utils.getInstance().appendInfo(String.format("Client connected using remote port %d", client.getPort()), LogStyle.SUCCESS);
 		     Utils.getInstance().changePortLabelColorByLogStyle(LogStyle.SUCCESS);
 		     final Thread t = new Thread(() -> {
