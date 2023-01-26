@@ -139,7 +139,7 @@ public class Utils {
 	private void recursionDirCleaning(File[] files) {
 		for (File file : files) {
             if (file.isDirectory()) {
-            	appendInfo(String.format("Start cleaning directory: %s", Constants.IMEGES_DIR + file.getName()), LogStyle.INFO);
+            	appendInfo(String.format("Directory: %s is going to be analyzed to remove old imeges.", Constants.IMEGES_DIR + file.getName()), LogStyle.INFO);
                 recursionDirCleaning(file.listFiles());
             } else {
             	Pattern imageDatePattern = Pattern.compile(Constants.IMAGE_DTAE_REGEXP, Pattern.CASE_INSENSITIVE);
@@ -183,7 +183,8 @@ public class Utils {
 	private boolean checkIfDateIsOld(Date date) {
 		Calendar c = Calendar.getInstance();
 		c.setTime(date);
-		c.add(Calendar.DATE, Constants.DAYS_TO_KEEP_IMAGE);
+		//c.add(Calendar.DATE, Constants.DAYS_TO_KEEP_IMAGE);
+		c.add(Calendar.HOUR_OF_DAY, 4);
 		return new Date().after(c.getTime());
 	}
 	
@@ -194,7 +195,7 @@ public class Utils {
 	
 	private Date parseDate(String date) {
 		try {
-			return  new SimpleDateFormat("dd-MM-yyyy").parse(date);
+			return  new SimpleDateFormat(Constants.DATE_FORMAT).parse(date);
 		} catch (ParseException ex) {
 			doWhenExceptionOccurs(ex, String.format("Ununable to parse date for value %s",date));
 			return null;

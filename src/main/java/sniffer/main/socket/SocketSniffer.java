@@ -42,11 +42,11 @@ public class SocketSniffer {
 		      while (!stoppedReading) {
 		        Thread.sleep(1000);
 		      }
+		      if(!client.isClosed())
+	    		  client.close();
+	    	  if(!server.isClosed())
+	    		  server.close();
 		      if(!stoppedListening) {
-		    	  if(!client.isClosed())
-		    		  client.close();
-		    	  if(!server.isClosed())
-		    		  server.close();
 		    	  stoppedReading = false;
 		    	  acceptClients(port, true);
 		      }

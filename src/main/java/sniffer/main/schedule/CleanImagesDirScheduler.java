@@ -36,8 +36,8 @@ public class CleanImagesDirScheduler {
 	private Trigger createTrigger() {    
         Trigger triggerNew = TriggerBuilder.newTrigger().withIdentity(NAME_OF_TRIGGER, NAME_OF_GROUP)  
                 .withSchedule(  
-                		SimpleScheduleBuilder.simpleSchedule().withIntervalInHours(TIME_INTERVAL).repeatForever())  
-                        //SimpleScheduleBuilder.simpleSchedule().withIntervalInSeconds(300).repeatForever())  
+                		//SimpleScheduleBuilder.simpleSchedule().withIntervalInHours(TIME_INTERVAL).repeatForever())  
+                        SimpleScheduleBuilder.simpleSchedule().withIntervalInMinutes(30).repeatForever())  
                 .build();  
         return triggerNew;  
     }  
