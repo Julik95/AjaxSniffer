@@ -18,8 +18,7 @@ public class SocketSniffer {
 	 private volatile boolean stoppedListening = false;
 	 
 	 public void acceptClients(Integer port, boolean alreadyListening) {
-		 try{
-			 ServerSocket server = new ServerSocket(port);
+		 try(ServerSocket server = new ServerSocket(port)){
 			 if(!alreadyListening) {
 				 Utils.getInstance().appendInfo(String.format("Server ready to accept connections on port %d", server.getLocalPort()), LogStyle.INFO);
 			 }
