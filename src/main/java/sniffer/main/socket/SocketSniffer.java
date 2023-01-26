@@ -17,12 +17,16 @@ public class SocketSniffer {
 	 private volatile boolean stoppedReading = false;
 	 private volatile boolean stoppedListening = false;
 	 
+	 private ServerSocket server;
+	 private Socket client;
+	 
 	 public void acceptClients(Integer port, boolean alreadyListening) {
-		 try (ServerSocket server = new ServerSocket(port)) {
+		 try{
+			 this.server = new ServerSocket(port);
 			 if(!alreadyListening) {
 				 Utils.getInstance().appendInfo(String.format("Server ready to accept connections on port %d", server.getLocalPort()), LogStyle.INFO);
 			 }
-		     final Socket client = server.accept();
+		     client = server.accept();
 		     Utils.getInstance().appendInfo(String.format("Client connected using remote port %d", client.getPort()), LogStyle.SUCCESS);
 		     Utils.getInstance().changePortLabelColorByLogStyle(LogStyle.SUCCESS);
 		     final Thread t = new Thread(() -> {
@@ -43,8 +47,10 @@ public class SocketSniffer {
 		        Thread.sleep(1000);
 		      }
 		      if(!stoppedListening) {
-		    	  client.close();
-		    	  server.close();
+		    	  if(!client.isClosed())
+		    		  client.close();
+		    	  if(!server.isClosed())
+		    		  server.close();
 		    	  stoppedReading = false;
 		    	  acceptClients(port, true);
 		      }
@@ -88,8 +94,8 @@ public class SocketSniffer {
 	 public void setStopped(boolean stopped) {
 		 this.stoppedReading = stopped;
 		 stoppedListening = stopped;
+		 
 	 }
-	 
 	 
 	 
 	 

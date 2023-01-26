@@ -4,8 +4,6 @@ import java.io.File;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.net.URL;
-import java.nio.charset.Charset;
-import java.util.Random;
 import java.util.ResourceBundle;
 
 import org.quartz.SchedulerException;
@@ -13,17 +11,20 @@ import org.quartz.SchedulerException;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
+import javafx.scene.control.Tooltip;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
-import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import sniffer.main.schedule.CleanImagesDirScheduler;
@@ -47,6 +48,8 @@ public class MainSceneController implements Initializable{
 	@FXML
 	private Label portNumLabel;
 	
+	private final Tooltip labelPortTooltip = new Tooltip();
+	
 	private SocketSniffer socketSniffer;
 	private CleanImagesDirScheduler cleanImagesDirScheduler;
 	
@@ -62,7 +65,9 @@ public class MainSceneController implements Initializable{
 			Utils.getInstance().doWhenExceptionOccurs(e, "Unenable to start scheduler to set cleaning dir");
 			e.printStackTrace();
 		}
-		
+		labelPortTooltip.setText("Fare il doppio click sul numero della porta per chiudere la connessione.");
+		labelPortTooltip.setStyle("-fx-font-size: 12");
+		handlePortLabelAction();
 	}
 
 	public void handleOnCloseEvent() {
@@ -127,6 +132,11 @@ public class MainSceneController implements Initializable{
 		Platform.runLater(() -> {
 			portNumLabel.getStyleClass().clear();
 			portNumLabel.getStyleClass().add(logStyle.getStyle());
+			if(logStyle == LogStyle.SUCCESS) {
+				portNumLabel.setTooltip(labelPortTooltip);
+			}else {
+				portNumLabel.setTooltip(null);
+			}
 		});
 	}
 	
@@ -137,8 +147,7 @@ public class MainSceneController implements Initializable{
 			Integer portNum = Utils.getInstance().getPortFromPropsFile(file);
 			if(portNum != null) {
 				portNumLabel.setText(portNum.toString());
-				portNumLabel.getStyleClass().clear();
-				portNumLabel.getStyleClass().add("warn");
+				applyStyletoPortNumLabel(LogStyle.WARN);
 				choosePropsWrapper.setVisible(false);
 				choosedPropsWrapper.setVisible(true);
 				 Task<Void> task = new Task<Void>() {
@@ -155,6 +164,23 @@ public class MainSceneController implements Initializable{
 			}
 		}
 		
+	}
+	
+	public void handlePortLabelAction() {
+		portNumLabel.setOnMousePressed(new EventHandler<MouseEvent>() {
+		    @Override 
+		    public void handle(MouseEvent event) {
+		        if (event.isPrimaryButtonDown() && event.getClickCount() == 2) {
+		        	if(portNumLabel.getStyleClass().contains(LogStyle.SUCCESS.getStyle())) {
+			        	Alert alert = new Alert(AlertType.CONFIRMATION, "La connessione con il socket verrà terminata, vuoi procedere?", ButtonType.YES, ButtonType.NO);
+			        	alert.showAndWait();
+			        	if (alert.getResult() == ButtonType.YES) {
+			        		socketSniffer.setStopped(true);
+			        	}
+		        	}
+		        }
+		    }
+		});
 	}
 	
 	private FileChooser showFileChooser() {
