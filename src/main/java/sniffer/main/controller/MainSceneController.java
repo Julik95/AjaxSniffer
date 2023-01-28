@@ -183,7 +183,6 @@ public class MainSceneController implements Initializable{
 						socketSniffer.acceptClients(portNum, false);
 						return null;
 					}
-					 
 				 };
 				 acceptClients = new Thread(task);
 				 acceptClients.setDaemon(true);

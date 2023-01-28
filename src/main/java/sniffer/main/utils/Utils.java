@@ -99,7 +99,6 @@ public class Utils {
 					if(metasMatcher.find()) {
 						String imageSavedPath = downloadImageToLocal(new URL(url), metasMatcher.group());
 						if(!StringUtils.isEmpty(imageSavedPath)) {
-							//appendInfo(String.format("Image %s has been successfully saved!", imageSavedPath), LogStyle.SUCCESS);
 							controller.appendImageDownloadedInfo("Image %s has been successfully saved!", imageSavedPath);
 						}
 					}else {

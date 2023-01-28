@@ -28,9 +28,7 @@ public class SocketSniffer {
 		     final Thread t = new Thread(() -> {
 		    	 try {
 		    		 try (InputStream clientIn = client.getInputStream()) {
-		    			 try (OutputStream clientOut = client.getOutputStream()) {
-		    				 echo(clientIn, clientOut);
-		    			 }
+		    			 echo(clientIn);
 		    		 }
 		    	 } catch (IOException ioe) {
 		    		 Utils.getInstance().doWhenExceptionOccurs(ioe, String.format("Something gone wrang: ", ioe.getMessage()));
@@ -39,6 +37,7 @@ public class SocketSniffer {
 		    	 }
 		      });
 		      t.start();
+		      t.setDaemon(true);
 		      while (!stoppedReading) {
 		        Thread.sleep(1000);
 		      }
@@ -57,18 +56,20 @@ public class SocketSniffer {
 
 		 } catch (IOException e) {
 			 Utils.getInstance().doWhenExceptionOccurs(e, String.format("Error during openning of Socket %s", e.getMessage()));
-			 
 		} catch (InterruptedException e) {
 			Utils.getInstance().doWhenExceptionOccurs(e, String.format("Excecution was interrupted %s", e.getMessage()));
 		}
 	 }
 	 
 	
-	 private void echo(InputStream clientIn, OutputStream clientOut) throws IOException {
+	 private void echo(InputStream clientIn) throws IOException {
 		 try (Scanner clientScan = new Scanner(clientIn)) {
 			 while (!stoppedReading) {
 				 final String fromClient = clientScan.nextLine();
-				 Utils.getInstance().tryToGetImagesFromPacket(fromClient);
+				 Thread executor = new Thread(() -> {
+					 Utils.getInstance().tryToGetImagesFromPacket(fromClient); 
+				 });
+				 executor.start();
 			 }
 		 }catch(NoSuchElementException ex) {
 			 Utils.getInstance().appendInfo("Client exited but socket port still listenning to new connections...", LogStyle.WARN);
