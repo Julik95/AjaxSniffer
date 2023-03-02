@@ -4,7 +4,7 @@
   <groupId>com.ajax</groupId>
   <artifactId>sniffer</artifactId>
   <name>Pocket sniffer</name>
-  <version>1.0.2</version>
+  <version>1.0.3</version>
   <build>
     <plugins>
       <plugin>
@@ -37,9 +37,9 @@
     </plugins>
   </build>
   <properties>
-    <maven.compiler.target>1.8</maven.compiler.target>
     <maven.compiler.source>1.8</maven.compiler.source>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <maven.compiler.target>1.8</maven.compiler.target>
   </properties>
 </project>
 
