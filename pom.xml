@@ -52,6 +52,11 @@
 		    <version>11</version>
 		    <classifier>mac</classifier>
   		</dependency>
+  		<dependency>
+		    <groupId>com.jfoenix</groupId>
+		    <artifactId>jfoenix</artifactId>
+		    <version>8.0.10</version>
+		</dependency>
   	</dependencies>
   	<build>
          <plugins>
@@ -64,6 +69,18 @@
                      <target>1.8</target>
                  </configuration>
              </plugin>
+             <plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<configuration>
+				    <archive>
+				        <manifest>
+				            <mainClass>org.programirame.Main</mainClass>
+				            <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+				        </manifest>
+				    </archive>
+				</configuration>
+			</plugin>
 		    <plugin>
 			    <artifactId>maven-shade-plugin</artifactId>
 			    <version>3.0.0</version>

@@ -2,7 +2,6 @@ package sniffer.main.socket;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.NoSuchElementException;
@@ -17,42 +16,38 @@ public class SocketSniffer {
 	 private volatile boolean stoppedReading = false;
 	 private volatile boolean stoppedListening = false;
 	 
+	 
 	 public void acceptClients(Integer port, boolean alreadyListening) {
 		 try(ServerSocket server = new ServerSocket(port)){
 			 if(!alreadyListening) {
 				 Utils.getInstance().appendInfo(String.format("Server ready to accept connections on port %d", server.getLocalPort()), LogStyle.INFO);
 			 }
+			 
 		     final Socket client = server.accept();
 		     Utils.getInstance().appendInfo(String.format("Client connected using remote port %d", client.getPort()), LogStyle.SUCCESS);
 		     Utils.getInstance().changePortLabelColorByLogStyle(LogStyle.SUCCESS);
-		     final Thread t = new Thread(() -> {
-		    	 try {
-		    		 try (InputStream clientIn = client.getInputStream()) {
-		    			 echo(clientIn);
-		    		 }
-		    	 } catch (IOException ioe) {
-		    		 Utils.getInstance().doWhenExceptionOccurs(ioe, String.format("Something gone wrang: ", ioe.getMessage()));
-		    		 Utils.getInstance().changePortLabelColorByLogStyle(LogStyle.ERROR);
-		    		 stoppedReading = true;
-		    	 }
-		      });
-		      t.start();
-		      t.setDaemon(true);
-		      while (!stoppedReading) {
-		        Thread.sleep(1000);
-		      }
-		      if(!client.isClosed())
-	    		  client.close();
-	    	  if(!server.isClosed())
-	    		  server.close();
-		      if(!stoppedListening) {
-		    	  stoppedReading = false;
-		    	  acceptClients(port, true);
-		      }
-		      if(!alreadyListening) {
-		    	  Utils.getInstance().appendInfo("Socket port has been closed", LogStyle.WARN);
-		    	  Utils.getInstance().changePortLabelColorByLogStyle(LogStyle.ERROR);
-		      }
+		     try (InputStream clientIn = client.getInputStream()) {
+    			 echo(clientIn);
+    		 }catch (IOException ioe) {
+	    		 Utils.getInstance().doWhenExceptionOccurs(ioe, String.format("Something gone wrang: ", ioe.getMessage()));
+	    		 Utils.getInstance().changePortLabelColorByLogStyle(LogStyle.ERROR);
+	    		 stoppedReading = true;
+	    	 }
+		     while (!stoppedReading) {
+		    	 Thread.sleep(1000);
+		     }
+		     if(!client.isClosed())
+		    	 client.close();
+	    	 if(!server.isClosed())
+	    		 server.close();
+		     if(!stoppedListening) {
+		    	 stoppedReading = false;
+		    	 acceptClients(port, true);
+		     }
+		     if(!alreadyListening) {
+		    	 Utils.getInstance().appendInfo("Socket port has been closed", LogStyle.WARN);
+		    	 Utils.getInstance().changePortLabelColorByLogStyle(LogStyle.ERROR);
+		     }
 
 		 } catch (IOException e) {
 			 Utils.getInstance().doWhenExceptionOccurs(e, String.format("Error during openning of Socket %s", e.getMessage()));
@@ -69,6 +64,7 @@ public class SocketSniffer {
 				 Thread executor = new Thread(() -> {
 					 Utils.getInstance().tryToGetImagesFromPacket(fromClient); 
 				 });
+				 executor.setDaemon(true);
 				 executor.start();
 			 }
 		 }catch(NoSuchElementException ex) {

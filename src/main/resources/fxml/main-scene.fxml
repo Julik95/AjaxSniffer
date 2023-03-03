@@ -9,56 +9,56 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
+<?import com.jfoenix.controls.JFXButton?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sniffer.main.controller.MainSceneController">
-   <top>
-      <StackPane prefHeight="150.0" prefWidth="200.0" BorderPane.alignment="CENTER">
-         <children>
-            <HBox fx:id="choosedPropsWrapper" alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="5.0" visible="false">
-               <children>
-                  <Label text="Uso la porta: ">
-                     <font>
-                        <Font size="14.0" />
-                     </font>
-                  </Label>
-                  <Label fx:id="portNumLabel" text="8080">
-                     <font>
-                        <Font name="System Bold" size="18.0" />
-                     </font>
-                  </Label>
-                  <Label text="recuperata dal file di properties.">
-                     <font>
-                        <Font size="14.0" />
-                     </font>
-                  </Label>
-               </children>
-            </HBox>
-            <VBox fx:id="choosePropsWrapper" alignment="CENTER" prefHeight="200.0" prefWidth="100.0" spacing="15.0">
-               <children>
-                  <Label text="Selezionare il file properties(clientSettings.properties) dall'App Ajax Translator">
-                     <font>
-                        <Font size="14.0" />
-                     </font>
-                  </Label>
-                  <Button fx:id="choosePropsBtn" mnemonicParsing="false" onAction="#handleChooseFile" text="Seleziona File" />
-               </children>
-            </VBox>
-         </children>
-      </StackPane>
-   </top>
-   <center>
-      <StackPane prefHeight="150.0" prefWidth="200.0" BorderPane.alignment="CENTER">
-         <children>
-            <ScrollPane prefHeight="200.0" prefWidth="200.0">
-               <content>
-                  <VBox fx:id="logContainer" prefHeight="236.0" spacing="7.0">
-                     <padding>
-                        <Insets bottom="7.0" left="10.0" right="7.0" top="7.0" />
-                     </padding>
-                  </VBox>
-               </content>
-            </ScrollPane>
-         </children>
-      </StackPane>
-   </center>
-</BorderPane>
+<StackPane fx:id="rootStack" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sniffer.main.controller.MainSceneController">
+	<BorderPane>
+	   <top>
+	      <StackPane prefHeight="150.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+	         <children>
+	            <HBox fx:id="choosedPropsWrapper" alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="5.0" visible="false">
+	               <children>
+	                  <Label styleClass="font-14, heading" text="Uso la porta: " />
+	                  <Label fx:id="portNumLabel" text="8080" />
+	                  <Label styleClass="font-14, heading" text="recuperata dal file di properties." />
+	               </children>
+	            </HBox>
+	            <VBox fx:id="choosePropsWrapper" alignment="CENTER" prefHeight="200.0" prefWidth="100.0" spacing="15.0">
+	               <children>
+	                  <Label styleClass="font-14, heading" text="Selezionare il file properties(clientSettings.properties) dall'App Ajax Translator">
+	                     <font>
+	                        <Font size="14.0" />
+	                     </font>
+	                  </Label>
+	                  <JFXButton prefWidth="300" styleClass="font-12, choosep-props-btn" buttonType="RAISED" fx:id="choosePropsBtn" mnemonicParsing="false" onAction="#handleChooseFile" text="Seleziona File" />
+	               </children>
+	            </VBox>
+	         </children>
+	      </StackPane>
+	   </top>
+	   <center>
+	      <StackPane BorderPane.alignment="CENTER">
+	         <children>
+	            <ScrollPane fitToHeight="true" fitToWidth="true" hbarPolicy="NEVER">
+	               <content>
+	                  <VBox style="-fx-background-color: #ECEFF1;" minHeight="350" fx:id="logContainer">
+	                     <padding>
+	                        <Insets bottom="7.0" left="10.0" right="7.0" top="7.0" />
+	                     </padding>
+	                  </VBox>
+	               </content>
+	            </ScrollPane>
+	         </children>
+	      </StackPane>
+	   </center>
+	   <bottom>
+	   	<HBox spacing="3" alignment="BASELINE_RIGHT" >
+	   		<children>
+	   			<Label styleClass="version-label" text="Versione: "/>
+	   			<Label styleClass="version-num-label" fx:id="versionNumLabel" text="Work in progress.."/>
+	   		</children>
+	   	</HBox>
+	   	
+	   </bottom>
+	</BorderPane>
+</StackPane>

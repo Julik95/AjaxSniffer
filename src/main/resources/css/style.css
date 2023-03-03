@@ -1,21 +1,133 @@
+/*Custom scroll */
+
+.scroll-bar:horizontal .track,
+.scroll-bar:vertical .track{
+    -fx-background-color :transparent;
+    -fx-border-color :transparent;
+    -fx-background-radius : 0;
+    -fx-border-radius :10px;
+}
+.scroll-bar:horizontal .increment-button ,
+.scroll-bar:horizontal .decrement-button {
+    -fx-background-color :transparent;
+    -fx-background-radius : 0.0em;
+    -fx-padding :0.0 0.0 10.0 0.0;
+
+}
+
+.scroll-bar:vertical .increment-button ,
+.scroll-bar:vertical .decrement-button {
+    -fx-background-color :transparent;
+    -fx-background-radius : 0;
+
+}
+
+ .scroll-bar .increment-arrow,
+ .scroll-bar .decrement-arrow{
+    -fx-shape : " ";    
+    -fx-padding :1px 0;
+}
+
+ .scroll-bar:vertical .increment-arrow,
+ .scroll-bar:vertical .decrement-arrow{
+    -fx-shape : " ";    
+    -fx-padding :0 3px;
+}
+
+.scroll-bar:horizontal .thumb,
+.scroll-bar:vertical .thumb {
+    -fx-background-color :derive(black,90.0%);
+    -fx-background-radius : 10px;
+}
+
+.scroll-bar:horizontal .thumb:hover,
+.scroll-bar:vertical .thumb:hover,
+.scroll-bar:vertical .thumb:focused {
+    -fx-background-color :derive(#4D4C4F,10.0%);
+    -fx-background-radius : 10px;
+    -fx-padding :0.0 5.0 0.0 0.0;
+}
+
 .success{
-	-fx-text-fill: #229954;
+	-fx-text-fill: #1B5E20;
+	-fx-font-family:"Roboto Bold";
 	-fx-font-weight: bold;
 }
 
 .warn{
-	-fx-text-fill: #F1C40F;
+	-fx-text-fill: #E65100;
+	-fx-font-family:"Roboto Medium";
 }
 .error{
-	-fx-text-fill: #E74C3C;
-	-fx-font-weight: bold;
+	-fx-text-fill: #B71C1C;
+	-fx-font-family:"Roboto Bold";
 }
 
 .info{
-	-fx-text-fill: #5DADE2
+	-fx-text-fill: #01579B;
+	-fx-font-family: "Roboto Medium";
 }
 
 .none{
-	-fx-text-fill: #424949;
+	-fx-text-fill: #37474F;
 }
 
+.font-12{
+	-fx-font-family: "Roboto Bold";
+	-fx-font-size: 12;
+	-fx-padding: 10;
+}
+
+.choosep-props-btn{
+	-fx-background-color: #78909C;
+	-fx-text-fill:#FFF;
+}
+.font-18{
+	-fx-font-size: 18;
+}
+.font-14{
+	-fx-font-size: 14;
+}
+.heading{
+	-fx-font-family:"Roboto Medium";
+}
+.heading-huge{
+	-fx-font-family:"Roboto Bold";
+}
+
+.jfx-decorator {
+    -fx-decorator-color: #37474F;
+    -fx-font-family: "Roboto Bold";
+}
+
+.jfx-decorator .jfx-decorator-buttons-container {
+    -fx-background-color: -fx-decorator-color;
+}
+
+.jfx-decorator .resize-border {
+    -fx-border-color: -fx-decorator-color;
+    -fx-border-width: 0 2 2 2;
+}
+.error-dialog-heading{
+	-fx-text-fill:#D32F2F;
+	-fx-font-family:"Roboto Bold";
+}
+.dialog-short-message{
+	-fx-font-family:"Roboto";
+	-fx-font-fill:#000;
+}
+.transparent-bg-scroll-pane{
+	-fx-focus-color: transparent;
+	-fx-faint-focus-color: transparent;
+	-fx-background-color:transparent;
+}
+.version-num-label{
+	-fx-text-fill:#B0BEC5;
+	-fx-font-family: "Roboto Bold";
+	-fx-font-size:11;
+}
+.version-label{
+	-fx-text-fill:#B0BEC5;
+	-fx-font-family: "Roboto";
+	-fx-font-size:10;
+}

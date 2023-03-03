@@ -10,22 +10,27 @@ import java.util.ResourceBundle;
 
 import org.quartz.SchedulerException;
 
+import com.jfoenix.controls.JFXButton;
+import com.jfoenix.controls.JFXDialog;
+import com.jfoenix.controls.JFXDialogLayout;
+
 import javafx.application.Platform;
-import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.geometry.Pos;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
-import javafx.scene.control.TextArea;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.control.ScrollPane.ScrollBarPolicy;
+import javafx.scene.control.Separator;
 import javafx.scene.control.Tooltip;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -48,7 +53,10 @@ public class MainSceneController implements Initializable{
 	private VBox choosePropsWrapper;
 	
 	@FXML
-	private Label portNumLabel;
+	private Label portNumLabel,versionNumLabel;
+	
+	@FXML
+	private StackPane rootStack;
 	
 	private final Tooltip labelPortTooltip = new Tooltip();
 	
@@ -59,6 +67,11 @@ public class MainSceneController implements Initializable{
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
+		String version = "Work in progress..";
+		if(getClass().getPackage().getImplementationVersion() != null) {
+			version  = getClass().getPackage().getImplementationVersion();
+		}
+		versionNumLabel.setText(version);
 		socketSniffer = new SocketSniffer();
 		cleanImagesDirScheduler = new CleanImagesDirScheduler();
 		try {
@@ -91,33 +104,50 @@ public class MainSceneController implements Initializable{
 	public void handleError(Exception ex, String message) {
 		
 		Platform.runLater(() -> {
-			Alert alert = new Alert(AlertType.ERROR);
-			alert.setTitle("Error occured");
-			alert.setHeaderText(message);
-			Label label = new Label("The exception stacktrace:");
+			JFXDialogLayout dialogLayout = new JFXDialogLayout();
+			dialogLayout.setMaxHeight(720);
+			dialogLayout.setMaxWidth(1080);
+			JFXDialog dialog = new JFXDialog(rootStack, dialogLayout, JFXDialog.DialogTransition.CENTER);
+			Label heading = new Label("Some error occured");
+			heading.getStyleClass().addAll("font-18","error-dialog-heading");
+			dialogLayout.setHeading(heading);
+			
+			JFXButton close = new JFXButton("Chiudi");
+			close.setOnMouseClicked(event -> {
+				dialog.close();
+			});
+			dialogLayout.setActions(close);
+			
+			VBox content = new VBox(10);
+			content.setAlignment(Pos.CENTER);
+			Label shortError = new Label(ex.getMessage());
+			StackPane errorContainer = new StackPane();
+			ScrollPane scroll = new ScrollPane(errorContainer);
+			scroll.getStyleClass().add("transparent-bg-scroll-pane");
+			shortError.setOnMouseClicked(event ->{
+				scroll.setVisible(true);
+				scroll.setManaged(true);
+			});
+			shortError.setWrapText(true);
+			shortError.setMaxWidth(350);
+			shortError.getStyleClass().addAll("font-12", "dialog-short-message");
 			
 			StringWriter sw = new StringWriter();
 			PrintWriter pw = new PrintWriter(sw);
 			ex.printStackTrace(pw);
-			String exceptionText = sw.toString();
+			Label errorText = new Label(sw.toString());
+			errorText.setWrapText(true);
+			errorText.setMaxWidth(980);
+			scroll.setVbarPolicy(ScrollBarPolicy.AS_NEEDED);
+			errorText.getStyleClass().addAll("font-12", "dialog-short-message");
+			errorContainer.getChildren().add(errorText);
+			scroll.setVisible(false);
+			scroll.setManaged(false);
+			content.getChildren().addAll(shortError, new Separator(),scroll);
+			dialogLayout.setBody(content);
 			
-			TextArea textArea = new TextArea(exceptionText);
-			textArea.setEditable(false);
-			textArea.setWrapText(true);
+			dialog.show();
 
-			textArea.setMaxWidth(Double.MAX_VALUE);
-			textArea.setMaxHeight(Double.MAX_VALUE);
-			GridPane.setVgrow(textArea, Priority.ALWAYS);
-			GridPane.setHgrow(textArea, Priority.ALWAYS);
-
-			GridPane expContent = new GridPane();
-			expContent.setMaxWidth(Double.MAX_VALUE);
-			expContent.add(label, 0, 0);
-			expContent.add(textArea, 0, 1);
-
-			alert.getDialogPane().setExpandableContent(expContent);
-
-			alert.showAndWait();
 		});
 	}
 	
@@ -158,7 +188,7 @@ public class MainSceneController implements Initializable{
 	public void applyStyletoPortNumLabel(LogStyle logStyle) {
 		Platform.runLater(() -> {
 			portNumLabel.getStyleClass().clear();
-			portNumLabel.getStyleClass().add(logStyle.getStyle());
+			portNumLabel.getStyleClass().addAll("font-18",logStyle.getStyle());
 			if(logStyle == LogStyle.SUCCESS) {
 				portNumLabel.setTooltip(labelPortTooltip);
 			}else {
@@ -177,17 +207,15 @@ public class MainSceneController implements Initializable{
 				applyStyletoPortNumLabel(LogStyle.WARN);
 				choosePropsWrapper.setVisible(false);
 				choosedPropsWrapper.setVisible(true);
-				 Task<Void> task = new Task<Void>() {
-					@Override
-					protected Void call() throws Exception {
-						socketSniffer.acceptClients(portNum, false);
-						return null;
-					}
+				 Runnable task = () -> {
+					 socketSniffer.acceptClients(portNum, false);
 				 };
 				 acceptClients = new Thread(task);
 				 acceptClients.setDaemon(true);
 				 acceptClients.start();
+				 handleError(new UnsupportedOperationException("Messaggio di test"), "Messaggio di testst asdasda");
 			}
+			
 		}
 		
 	}

@@ -1,5 +1,7 @@
 package sniffer.main;
 
+import com.jfoenix.controls.JFXDecorator;
+
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Rectangle2D;
@@ -29,13 +31,16 @@ public class MainApp extends Application{
 		MainSceneController controller = (MainSceneController) loader.getController();
 		controller.setMainStage(primaryStage);
 		Utils.getInstance().setMainSceneControler(controller);
-		Scene mainScene = new Scene(root);
+		JFXDecorator decorator = new JFXDecorator(primaryStage, root);
+		Scene mainScene = new Scene(decorator);
+		mainScene.getStylesheets().add(getClass().getResource("/css/fonts.css").toExternalForm());
 		mainScene.getStylesheets().add(getClass().getResource("/css/style.css").toExternalForm());
-		primaryStage.setScene(mainScene);
+        primaryStage.setScene(mainScene);
 		primaryStage.setOnCloseRequest(windowEvent -> {
 			controller.handleOnCloseEvent();
 		});
 		primaryStage.show();
+		
 	}
 	
 	
