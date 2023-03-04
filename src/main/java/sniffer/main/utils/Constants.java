@@ -15,4 +15,7 @@ public interface Constants {
 	final String APP_TITLE = "Scarica immagini";
 	final String DATE_FORMAT = "dd-MM-yyyy_HH-mm-ss";
 	final Integer DAYS_TO_KEEP_IMAGE = 10;
+	
+	final String MESSAGE_HANDLER_THREAD_NAME = "MessageHandlerThread";
+	final String MESSAGE_CONSUMER_THREAD_NAME = "MessageConsumerThread";
 }

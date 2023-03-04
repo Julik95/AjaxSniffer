@@ -1,7 +1,5 @@
 package sniffer.main;
 
-import com.jfoenix.controls.JFXDecorator;
-
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Rectangle2D;
@@ -13,6 +11,7 @@ import javafx.stage.Stage;
 import sniffer.main.controller.MainSceneController;
 import sniffer.main.utils.Constants;
 import sniffer.main.utils.Utils;
+import sniffer.main.view.JFXDraggableDecorator;
 
 public class MainApp extends Application{
 	
@@ -31,7 +30,8 @@ public class MainApp extends Application{
 		MainSceneController controller = (MainSceneController) loader.getController();
 		controller.setMainStage(primaryStage);
 		Utils.getInstance().setMainSceneControler(controller);
-		JFXDecorator decorator = new JFXDecorator(primaryStage, root);
+		JFXDraggableDecorator decorator = new JFXDraggableDecorator(primaryStage, root, false, true, true);
+		decorator.setCustomMaximize(true);
 		Scene mainScene = new Scene(decorator);
 		mainScene.getStylesheets().add(getClass().getResource("/css/fonts.css").toExternalForm());
 		mainScene.getStylesheets().add(getClass().getResource("/css/style.css").toExternalForm());

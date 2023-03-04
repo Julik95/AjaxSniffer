@@ -62,8 +62,6 @@ public class MainSceneController implements Initializable{
 	
 	private SocketSniffer socketSniffer;
 	private CleanImagesDirScheduler cleanImagesDirScheduler;
-	
-	private Thread acceptClients;
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
@@ -72,7 +70,6 @@ public class MainSceneController implements Initializable{
 			version  = getClass().getPackage().getImplementationVersion();
 		}
 		versionNumLabel.setText(version);
-		socketSniffer = new SocketSniffer();
 		cleanImagesDirScheduler = new CleanImagesDirScheduler();
 		try {
 			cleanImagesDirScheduler.startSchedule();
@@ -86,10 +83,7 @@ public class MainSceneController implements Initializable{
 	}
 
 	public void handleOnCloseEvent() {
-		socketSniffer.setStopped(true);
-		if(acceptClients != null) {
-			acceptClients.stop();
-		}
+		socketSniffer.closeServerSocket();
 		try {
 			cleanImagesDirScheduler.stopSchedule();
 		} catch (SchedulerException e) {
@@ -101,8 +95,25 @@ public class MainSceneController implements Initializable{
 		this.mainStage = mainStage;
 	}
 	
+	public void showDialog(String title, String message, JFXButton... actions) {
+		Platform.runLater(() -> {
+			JFXDialogLayout dialogLayout = new JFXDialogLayout();
+			Label dialogTitle = new Label(title);
+			dialogTitle.getStyleClass().addAll("dialog-heading", "font-18");
+			dialogLayout.setHeading(dialogTitle);
+			
+			Label dialogText = new Label(message);
+			dialogText.getStyleClass().addAll("font-12", "dialog-short-message");
+			dialogLayout.setBody(dialogText);
+			
+			dialogLayout.setActions(actions);
+			
+			JFXDialog dialog = new JFXDialog(rootStack, dialogLayout, JFXDialog.DialogTransition.CENTER);
+			dialog.show();
+		});
+	}
+	
 	public void handleError(Exception ex, String message) {
-		
 		Platform.runLater(() -> {
 			JFXDialogLayout dialogLayout = new JFXDialogLayout();
 			dialogLayout.setMaxHeight(720);
@@ -120,7 +131,7 @@ public class MainSceneController implements Initializable{
 			
 			VBox content = new VBox(10);
 			content.setAlignment(Pos.CENTER);
-			Label shortError = new Label(ex.getMessage());
+			Label shortError = new Label(message);
 			StackPane errorContainer = new StackPane();
 			ScrollPane scroll = new ScrollPane(errorContainer);
 			scroll.getStyleClass().add("transparent-bg-scroll-pane");
@@ -208,12 +219,21 @@ public class MainSceneController implements Initializable{
 				choosePropsWrapper.setVisible(false);
 				choosedPropsWrapper.setVisible(true);
 				 Runnable task = () -> {
-					 socketSniffer.acceptClients(portNum, false);
+					 if(socketSniffer == null) {
+						 try {
+							socketSniffer = new SocketSniffer(portNum);
+						} catch (IOException e) {
+							Utils.getInstance().doWhenExceptionOccurs(e, "IOException occured during server socket initialization");
+						}
+					 }
+					 if(socketSniffer != null) {
+						 socketSniffer.acceptClients();
+					 }
+					 
 				 };
-				 acceptClients = new Thread(task);
+				 Thread acceptClients = new Thread(task);
 				 acceptClients.setDaemon(true);
 				 acceptClients.start();
-				 handleError(new UnsupportedOperationException("Messaggio di test"), "Messaggio di testst asdasda");
 			}
 			
 		}
@@ -226,11 +246,12 @@ public class MainSceneController implements Initializable{
 		    public void handle(MouseEvent event) {
 		        if (event.isPrimaryButtonDown() && event.getClickCount() == 2) {
 		        	if(portNumLabel.getStyleClass().contains(LogStyle.SUCCESS.getStyle())) {
-			        	Alert alert = new Alert(AlertType.CONFIRMATION, "La connessione con il socket verrà terminata, vuoi procedere?", ButtonType.YES, ButtonType.NO);
-			        	alert.showAndWait();
-			        	if (alert.getResult() == ButtonType.YES) {
-			        		socketSniffer.setStopped(true);
-			        	}
+		        		JFXButton closeConnection = new JFXButton("Termina");
+		        		closeConnection.setButtonType(JFXButton.ButtonType.FLAT);
+		        		closeConnection.setOnMouseClicked(e -> {
+		        			socketSniffer.closeCurrentClient();
+		        		});
+		        		showDialog("Chiususra connessione","La connessione con il socket verrà terminata, vuoi procedere?",closeConnection);
 		        	}
 		        }
 		    }
