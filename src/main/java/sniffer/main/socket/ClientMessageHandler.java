@@ -1,10 +1,10 @@
 package sniffer.main.socket;
 
-import java.io.DataInputStream;
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.Socket;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.Scanner;
 
 import sniffer.main.utils.Constants;
 import sniffer.main.utils.LogStyle;
@@ -12,12 +12,12 @@ import sniffer.main.utils.Utils;
 
 public class ClientMessageHandler extends Thread{
 	
-	private List<String> messages;
-	private DataInputStream clientInputStream;
+	private Messages messages;
+	private BufferedReader clientScanner;
 	private Socket client;
 	private MessageConsumer messageConsumer;
 	
-	private boolean listeningNewMessages;
+	private volatile boolean listeningNewMessages;
 	
 	
 	public ClientMessageHandler(Socket client) {
@@ -25,11 +25,11 @@ public class ClientMessageHandler extends Thread{
 		this.setName(Constants.MESSAGE_HANDLER_THREAD_NAME);
 		this.setDaemon(true);
 		try {
-			this.clientInputStream = new DataInputStream(client.getInputStream());
-			this.messages = new LinkedList<>();
+			this.clientScanner = new BufferedReader(new InputStreamReader(client.getInputStream()));
+			this.messages = new Messages();
 			messageConsumer = new MessageConsumer(messages);
 			listeningNewMessages = true;
-			Utils.getInstance().appendInfo(String.format("New client connected using remote port %d", client.getPort()), LogStyle.SUCCESS);
+			Utils.getInstance().appendInfo(String.format("Client connected using remote port %d", client.getPort()), LogStyle.SUCCESS);
 		    Utils.getInstance().changePortLabelColorByLogStyle(LogStyle.SUCCESS);
 		} catch (IOException e) {
 			Utils.getInstance().doWhenExceptionOccurs(e, "IOException occured during client input stream initialization");
@@ -40,25 +40,19 @@ public class ClientMessageHandler extends Thread{
 	
 	
 	public void run() {
-		if(clientInputStream != null) {
-			Utils.getInstance().appendInfo("Start handling client messages", LogStyle.INFO);
+		if(clientScanner != null) {
 			messageConsumer.start();
 			while(listeningNewMessages) {
 				try {
-					final String fromClient = clientInputStream.readUTF();
-					synchronized(this) {
-						messages.add(fromClient);
-						notifyAll();
-					}
+					messages.register(clientScanner.readLine());
 				} catch (IOException e) {
-					Utils.getInstance().doWhenExceptionOccurs(e, "IOException occured during reading new message from client socket");
+					Utils.getInstance().appendInfo("Input stream has been interrupted", LogStyle.WARN);
 				}
 			}
 			try {
 				client.close();
-				clientInputStream.close();
+				clientScanner.close();
 				messageConsumer.setConsume(false);
-				this.messages.clear();
 				notifyAll();
 				Utils.getInstance().appendInfo("Client has been successefully terminated", LogStyle.SUCCESS);
 			} catch (IOException e) {
@@ -68,9 +62,9 @@ public class ClientMessageHandler extends Thread{
 			Utils.getInstance().appendInfo("There was an attempt to start client message handler but client input stream is null", LogStyle.ERROR);
 		}
 	}
-
 	
 	public void setListeningNewMessages(boolean listeningNewMessages) {
 		this.listeningNewMessages = listeningNewMessages;
+		
 	}
 }

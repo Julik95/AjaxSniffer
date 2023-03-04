@@ -39,7 +39,7 @@
 	   <center>
 	      <StackPane BorderPane.alignment="CENTER">
 	         <children>
-	            <ScrollPane fitToHeight="true" fitToWidth="true" vbarPolicy="AS_NEEDED" hbarPolicy="AS_NEEDED">
+	            <ScrollPane fitToHeight="false" fitToWidth="true" vbarPolicy="ALWAYS" hbarPolicy="AS_NEEDED">
 	               <content>
 	                  <VBox style="-fx-background-color: #ECEFF1;" minHeight="350" fx:id="logContainer">
 	                     <padding>

@@ -15,6 +15,7 @@ public class SocketSniffer{
 	
 	public SocketSniffer(Integer port) throws IOException{
 		this.port = port;
+		serverSocket = new ServerSocket(port);
 	}
 	
 	public void acceptClients(){

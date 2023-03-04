@@ -58,6 +58,8 @@ public class MainSceneController implements Initializable{
 	@FXML
 	private StackPane rootStack;
 	
+	private JFXDialog dialog;
+	
 	private final Tooltip labelPortTooltip = new Tooltip();
 	
 	private SocketSniffer socketSniffer;
@@ -83,7 +85,9 @@ public class MainSceneController implements Initializable{
 	}
 
 	public void handleOnCloseEvent() {
-		socketSniffer.closeServerSocket();
+		if(socketSniffer != null) {
+			socketSniffer.closeServerSocket();
+		}
 		try {
 			cleanImagesDirScheduler.stopSchedule();
 		} catch (SchedulerException e) {
@@ -108,7 +112,7 @@ public class MainSceneController implements Initializable{
 			
 			dialogLayout.setActions(actions);
 			
-			JFXDialog dialog = new JFXDialog(rootStack, dialogLayout, JFXDialog.DialogTransition.CENTER);
+			dialog = new JFXDialog(rootStack, dialogLayout, JFXDialog.DialogTransition.CENTER);
 			dialog.show();
 		});
 	}
@@ -246,10 +250,13 @@ public class MainSceneController implements Initializable{
 		    public void handle(MouseEvent event) {
 		        if (event.isPrimaryButtonDown() && event.getClickCount() == 2) {
 		        	if(portNumLabel.getStyleClass().contains(LogStyle.SUCCESS.getStyle())) {
-		        		JFXButton closeConnection = new JFXButton("Termina");
+		        		JFXButton closeConnection = new JFXButton("Si, termina");
 		        		closeConnection.setButtonType(JFXButton.ButtonType.FLAT);
 		        		closeConnection.setOnMouseClicked(e -> {
 		        			socketSniffer.closeCurrentClient();
+		        			Utils.getInstance().changePortLabelColorByLogStyle(LogStyle.ERROR);
+		        			if(dialog != null)
+		        				dialog.close();
 		        		});
 		        		showDialog("Chiususra connessione","La connessione con il socket verrà terminata, vuoi procedere?",closeConnection);
 		        	}
